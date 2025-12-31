@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Indian IPO Intel - Retail Investor Analysis",
+  "description": "A high-performance IPO analysis dashboard providing real-time Indian stock market IPO data, risk scoring, and deep financial insights for retail investors.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
