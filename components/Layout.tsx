@@ -5,42 +5,63 @@ interface LayoutProps {
   children: React.ReactNode;
   isDark: boolean;
   toggleDark: () => void;
+  currentView: 'marketplace' | 'community';
+  setView: (view: 'marketplace' | 'community') => void;
 }
 
-const Header: React.FC<{isDark: boolean, toggleDark: () => void}> = ({isDark, toggleDark}) => (
-  <header className="glass sticky top-0 z-[60] border-b border-white/20 dark:border-slate-800">
+const Header: React.FC<{
+  isDark: boolean, 
+  toggleDark: () => void,
+  currentView: 'marketplace' | 'community',
+  setView: (view: 'marketplace' | 'community') => void
+}> = ({isDark, toggleDark, currentView, setView}) => (
+  <header className="sticky top-0 z-[60] border-b border-slate-200 dark:border-white/10 dark:bg-black/90 bg-white/90 backdrop-blur-xl transition-all duration-300">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
-        <div className="flex items-center space-x-3">
-          <div className="bg-gradient-to-br from-brand-violet to-brand-pink p-2 rounded-2xl shadow-lg shadow-brand-violet/20">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div 
+          className="flex items-center space-x-3 cursor-pointer group"
+          onClick={() => setView('marketplace')}
+        >
+          <div className="bg-brand-yellow p-2 rounded-xl shadow-lg shadow-brand-yellow/20 group-hover:scale-110 transition-transform">
+            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
           </div>
-          <span className="text-2xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-400">
-            NiveshIPO
+          <span className="text-xl sm:text-2xl font-black tracking-tighter dark:text-white text-slate-900">
+            NIVESH<span className="text-brand-yellow">IPO</span>
           </span>
         </div>
         
         <nav className="hidden lg:flex items-center space-x-10">
-          <a href="#" className="text-sm font-bold text-brand-violet">Marketplace</a>
-          <a href="#" className="text-sm font-bold text-slate-500 hover:text-brand-violet dark:text-slate-400 transition-colors">Risk Radar</a>
-          <a href="#" className="text-sm font-bold text-slate-500 hover:text-brand-violet dark:text-slate-400 transition-colors">Community</a>
+          <button 
+            onClick={() => setView('marketplace')}
+            className={`text-xs font-black uppercase tracking-widest transition-all ${currentView === 'marketplace' ? 'text-brand-yellow' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+          >
+            Terminal
+          </button>
+          <button 
+            onClick={() => setView('community')}
+            className={`text-xs font-black uppercase tracking-widest transition-all ${currentView === 'community' ? 'text-brand-yellow' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+          >
+            Network
+          </button>
         </nav>
 
         <div className="flex items-center space-x-4">
           <button 
             onClick={toggleDark}
-            className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:scale-110 transition-transform"
+            className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-brand-yellow hover:border-brand-yellow/30 transition-all flex items-center justify-center"
+            title="Toggle Visual Mode"
           >
             {isDark ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" /></svg>
             ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
             )}
           </button>
-          <div className="hidden sm:block px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 text-[10px] font-black tracking-widest uppercase">
-            Live Feed
+          <div className="hidden sm:flex items-center space-x-2 px-4 py-2 bg-brand-yellow text-black rounded-lg border border-brand-yellow/20 text-[10px] font-black tracking-widest uppercase shadow-sm">
+            <div className="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></div>
+            <span>LIVE OPS</span>
           </div>
         </div>
       </div>
@@ -48,50 +69,49 @@ const Header: React.FC<{isDark: boolean, toggleDark: () => void}> = ({isDark, to
   </header>
 );
 
-const Footer: React.FC = () => (
-  <footer className="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-20 mt-20">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-        <div className="col-span-1 md:col-span-2">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="bg-brand-violet p-1.5 rounded-xl">
-               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-            </div>
-            <span className="text-xl font-black dark:text-white">NiveshIPO</span>
-          </div>
-          <p className="max-w-xs text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium">
-            Next-gen financial tools for the modern Indian investor. Empowering your journey from IPO to Moon.
-          </p>
-        </div>
-        <div>
-          <h3 className="text-slate-900 dark:text-white font-bold mb-6">Playbook</h3>
-          <ul className="space-y-4 text-sm font-medium text-slate-500 dark:text-slate-400">
-            <li><a href="#" className="hover:text-brand-violet transition-colors">Mainboard</a></li>
-            <li><a href="#" className="hover:text-brand-violet transition-colors">SME Zone</a></li>
-            <li><a href="#" className="hover:text-brand-violet transition-colors">Risk Engine</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-slate-900 dark:text-white font-bold mb-6">The Boring Stuff</h3>
-          <ul className="space-y-4 text-sm font-medium text-slate-500 dark:text-slate-400">
-            <li><a href="#" className="hover:text-brand-violet transition-colors">Disclaimer</a></li>
-            <li><a href="#" className="hover:text-brand-violet transition-colors">SEBI Rules</a></li>
-          </ul>
-        </div>
-      </div>
-      <div className="mt-20 pt-8 border-t border-slate-100 dark:border-slate-800 text-[10px] text-center font-bold text-slate-400 tracking-[0.2em] uppercase">
-        * Market Risk is Real. Be Smart. Power by Gemini AI.
-      </div>
-    </div>
-  </footer>
+const BottomNav: React.FC<{
+  currentView: 'marketplace' | 'community',
+  setView: (view: 'marketplace' | 'community') => void
+}> = ({ currentView, setView }) => (
+  <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md">
+    <nav className="dark:bg-slate-900/90 bg-white/90 backdrop-blur-xl border border-slate-200 dark:border-brand-yellow/20 rounded-2xl p-2 flex justify-around items-center shadow-2xl">
+      <button 
+        onClick={() => setView('marketplace')}
+        className={`flex-1 flex flex-col items-center py-2.5 rounded-xl transition-all ${
+          currentView === 'marketplace' ? 'bg-brand-yellow text-black' : 'text-slate-500'
+        }`}
+      >
+        <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+        <span className="text-[8px] font-black uppercase">Term</span>
+      </button>
+      <button 
+        onClick={() => setView('community')}
+        className={`flex-1 flex flex-col items-center py-2.5 rounded-xl transition-all ${
+          currentView === 'community' ? 'bg-brand-yellow text-black' : 'text-slate-500'
+        }`}
+      >
+        <svg className="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" /></svg>
+        <span className="text-[8px] font-black uppercase">Net</span>
+      </button>
+    </nav>
+  </div>
 );
 
-export const Layout: React.FC<{ children: React.ReactNode, isDark: boolean, toggleDark: () => void }> = ({ children, isDark, toggleDark }) => (
+export const Layout: React.FC<{ 
+  children: React.ReactNode, 
+  isDark: boolean, 
+  toggleDark: () => void,
+  currentView: 'marketplace' | 'community',
+  setView: (view: 'marketplace' | 'community') => void
+}> = ({ children, isDark, toggleDark, currentView, setView }) => (
   <div className="min-h-screen flex flex-col font-sans transition-colors duration-300">
-    <Header isDark={isDark} toggleDark={toggleDark} />
+    <Header isDark={isDark} toggleDark={toggleDark} currentView={currentView} setView={setView} />
     <main className="flex-grow">
       {children}
     </main>
-    <Footer />
+    <BottomNav currentView={currentView} setView={setView} />
+    <footer className="py-20 border-t border-slate-200 dark:border-brand-yellow/5 text-center mt-20">
+      <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Quantum Intelligence Terminal © 2025</p>
+    </footer>
   </div>
 );

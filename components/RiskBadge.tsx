@@ -8,14 +8,14 @@ interface RiskBadgeProps {
 
 export const RiskBadge: React.FC<RiskBadgeProps> = ({ level }) => {
   const styles = {
-    Low: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    Moderate: 'bg-amber-100 text-amber-700 border-amber-200',
-    High: 'bg-rose-100 text-rose-700 border-rose-200'
+    Low: 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10',
+    Moderate: 'border-brand-yellow/50 text-brand-yellow bg-brand-yellow/10',
+    High: 'border-red-500/50 text-red-400 bg-red-500/10'
   };
 
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border ${styles[level]}`}>
-      {level} Risk
+    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${styles[level]}`}>
+      {level} RISK
     </span>
   );
 };

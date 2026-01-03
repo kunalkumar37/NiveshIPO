@@ -1,8 +1,7 @@
 
-import { GoogleGenAI } from "@google/genai";
-import { IPO, RiskAnalysis, WeightPreferences, GroundingSource } from "../types";
+import { GoogleGenAI, Type } from "@google/genai";
+import { IPO, RiskAnalysis, WeightPreferences, GroundingSource, MarketNews } from "../types";
 
-// Helper to extract web grounding sources from search results
 const extractSources = (response: any): GroundingSource[] => {
   const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
   if (!chunks) return [];
@@ -15,7 +14,6 @@ const extractSources = (response: any): GroundingSource[] => {
     }));
 };
 
-// Robust JSON parsing from markdown text
 const parseJsonFromText = (text: string) => {
   try {
     const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/({[\s\S]*})|(\[[\s\S]*\])/);
@@ -32,37 +30,39 @@ const parseJsonFromText = (text: string) => {
   }
 };
 
-export const getLiveIPOData = async (): Promise<{ data: IPO[], sources: GroundingSource[] }> => {
+export const getLiveIPOData = async (): Promise<{ data: IPO[], sources: GroundingSource[], news: MarketNews[] }> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: "Fetch the latest real-time Indian IPO data (Mainboard & SME) from NSE and BSE as of today. I need exactly 8 current, upcoming, or recently closed IPOs. For each, include: companyName, symbol, status (Live/Upcoming/Closed), ipoType (Mainboard/SME), issueSize, priceBand, lotSize, openDate, closeDate, listingDate, gmp, listingGainEstimate (AI prediction string like '+20-25% expected'), description, sector, riskScore (0-100), registrar, leadManager. Also include subscription data (qib, nii, retail, total). Return only a clean JSON array.",
+      contents: `Fetch two things:
+      1. The latest real-time Indian IPO data (Mainboard & SME) from NSE and BSE. Include 8 IPOs with details: companyName, symbol, status, ipoType, issueSize, priceBand, lotSize, dates, gmp, prediction, description, sector, riskScore, registrar, leadManager, and subscription stats.
+      2. 5-7 trending Indian Stock Market news items specifically about IPOs or major market moves. Each news item needs: title, url (real source link), source (name of publisher), and time (e.g., '10m ago').
+      
+      Return as a single JSON object: { "ipos": [...], "news": [...] }`,
       config: {
         tools: [{ googleSearch: {} }],
       }
     });
 
     const sources = extractSources(response);
-    let data = parseJsonFromText(response.text || "[]");
+    const result = parseJsonFromText(response.text || "{}");
     
-    // Ensure data is always an array
-    if (data && !Array.isArray(data)) {
-      if (typeof data === 'object' && data.ipos && Array.isArray(data.ipos)) {
-        data = data.ipos;
-      } else if (typeof data === 'object' && data.data && Array.isArray(data.data)) {
-        data = data.data;
-      } else {
-        data = [];
-      }
-    } else if (!data) {
-      data = [];
-    }
+    let ipos = result?.ipos || [];
+    let news = result?.news || [];
     
-    return { data, sources };
+    if (!Array.isArray(ipos)) ipos = [];
+    if (!Array.isArray(news)) news = [];
+    
+    news = news.map((n: any, idx: number) => ({
+      ...n,
+      id: n.id || `news-${idx}-${Date.now()}`
+    }));
+
+    return { data: ipos, sources, news };
   } catch (error) {
     console.error("Error fetching IPO data:", error);
-    return { data: [], sources: [] };
+    return { data: [], sources: [], news: [] };
   }
 };
 
@@ -70,24 +70,14 @@ export const getRiskAnalysis = async (ipo: IPO, weights: WeightPreferences): Pro
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const prompt = `Perform an ultra-detailed AI risk analysis for the Indian IPO: ${ipo.companyName} (${ipo.symbol}). 
   User Weightings: Fundamentals ${weights.fundamentals}%, Valuation ${weights.valuation}%, Sentiment ${weights.sentiment}%.
-  
-  Please look for recent news, GMP trends, and subscription status.
-  Provide:
-  1. Risk Levels (Low/Moderate/High) for: Fundamentals, Stability, Pricing, Sentiment.
-  2. A sharp, narrative 'summary' verdict (50 words).
-  3. Professional 'redFlags' list and 'strengths' list.
-  4. 'suitabilityScore' (0-100) specifically for retail investors.
-  5. 'investorPersona' (e.g., 'Risk-Averse Value Seeker').
-  6. 'sectorOutlook' (2-sentence view on the industry vertical).
-  7. 'listingStrategy' (Hold/Sell/Partial exit advice).
-  
-  Return ONLY clean JSON.`;
+  Provide: risk levels, summary, red flags, strengths, suitabilityScore, investorPersona, sectorOutlook, and listingStrategy. Return ONLY clean JSON.`;
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
       contents: prompt,
       config: {
+        thinkingConfig: { thinkingBudget: 32768 },
         tools: [{ googleSearch: {} }],
       }
     });
@@ -95,22 +85,20 @@ export const getRiskAnalysis = async (ipo: IPO, weights: WeightPreferences): Pro
     const sources = extractSources(response);
     const analysis = parseJsonFromText(response.text || "{}") as RiskAnalysis;
     
-    const finalAnalysis = {
+    return {
       fundamentals: analysis?.fundamentals || 'Moderate',
       stability: analysis?.stability || 'Moderate',
       pricing: analysis?.pricing || 'Moderate',
       sentiment: analysis?.sentiment || 'Moderate',
-      summary: analysis?.summary || 'Formulating detailed market assessment based on real-time volatility indices and sector specific fundamentals...',
-      redFlags: Array.isArray(analysis?.redFlags) && analysis.redFlags.length > 0 ? analysis.redFlags : ["Potential market volatility impact", "Evaluating sector-specific liquidity risks"],
-      strengths: Array.isArray(analysis?.strengths) && analysis.strengths.length > 0 ? analysis.strengths : ["Strong sector tailwinds observed", "Healthy subscription interest indicators"],
+      summary: analysis?.summary || 'Analysis in progress...',
+      redFlags: analysis?.redFlags || [],
+      strengths: analysis?.strengths || [],
       sources: sources,
       suitabilityScore: analysis?.suitabilityScore || 50,
-      investorPersona: analysis?.investorPersona || 'Diversified Retail Investor',
-      sectorOutlook: analysis?.sectorOutlook || 'The sector shows long-term resilience with emerging tailwinds in digital adoption and infrastructure spend.',
-      listingStrategy: analysis?.listingStrategy || 'Wait for listing day volume assessment before making final allocation moves.'
+      investorPersona: analysis?.investorPersona || 'Diversified Investor',
+      sectorOutlook: analysis?.sectorOutlook || 'Market Outlook Stable',
+      listingStrategy: analysis?.listingStrategy || 'Wait and Watch'
     };
-
-    return finalAnalysis;
   } catch (error) {
     console.error("Error generating risk analysis:", error);
     return {
@@ -118,14 +106,63 @@ export const getRiskAnalysis = async (ipo: IPO, weights: WeightPreferences): Pro
       stability: 'Moderate',
       pricing: 'Moderate',
       sentiment: 'Moderate',
-      summary: 'Automated assessment in progress. Currently aggregating secondary market signals and fundamental metrics...',
-      redFlags: ["System processing real-time signals..."],
-      strengths: ["Historical sector performance is supportive"],
-      sources: [],
-      suitabilityScore: 50,
-      investorPersona: 'General Portfolio Builder',
-      sectorOutlook: 'Neutral to Positive outlook pending final subscription tally.',
-      listingStrategy: 'Dynamic entry/exit strategy based on listing day GMP variance.'
+      summary: 'Fallback analysis due to connectivity issues.',
+      redFlags: [], strengths: [], sources: [], suitabilityScore: 50, investorPersona: 'General Investor', sectorOutlook: 'Stable', listingStrategy: 'Dynamic'
     };
+  }
+};
+
+export const chatWithFinancialAI = async (message: string, history: { role: string, parts: { text: string }[] }[]) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-pro-preview",
+      contents: [
+        { role: 'user', parts: [{ text: `You are NiveshAI, a world-class financial analyst and stock market expert.
+        Rules:
+        1. YOU ONLY TALK ABOUT FINANCIAL MARKETS, STOCKS, IPOS, AND MACROECONOMICS.
+        2. If a user asks non-financial questions, politely redirect them back to market analysis.
+        3. Point-to-point bullet formats only.
+        4. Highlight metrics like **PE Ratio**, **Market Cap**, **GMP**, **EBITDA** in BOLD.
+        5. Be extremely precise and data-driven.` }] },
+        ...history,
+        { role: 'user', parts: [{ text: message }] }
+      ],
+      config: {
+        thinkingConfig: { thinkingBudget: 32768 },
+        tools: [{ googleSearch: {} }],
+        systemInstruction: "You are an expert financial advisor named NiveshAI. Answer strictly market-related queries. Use structured bullet points. Bold all important financial metrics."
+      }
+    });
+
+    return {
+      text: response.text || "Connection error in the financial grid.",
+      sources: extractSources(response)
+    };
+  } catch (error) {
+    console.error("Chat error:", error);
+    return { text: "Market analysis terminal offline.", sources: [] };
+  }
+};
+
+export const transcribeAudio = async (base64Audio: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: [
+        {
+          parts: [
+            { inlineData: { mimeType: 'audio/wav', data: base64Audio } },
+            { text: "Transcribe this audio exactly. Only return the transcription text." }
+          ]
+        }
+      ]
+    });
+    return response.text || "";
+  } catch (error) {
+    console.error("Transcription error:", error);
+    return "Error transcribing audio.";
   }
 };

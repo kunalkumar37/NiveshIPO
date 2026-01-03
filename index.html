@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NiveshIPO | GenZ IPO Analysis</title>
+    <title>NiveshIPO | Advanced Financial Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +16,24 @@
           extend: {
             fontFamily: {
               sans: ['Outfit', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
               brand: {
-                violet: '#8B5CF6',
-                cyan: '#06B6D4',
-                pink: '#EC4899',
+                yellow: '#FACC15',
+                black: '#000000',
+                dark: '#0F172A',
+                gray: '#1E293B'
+              }
+            },
+            animation: {
+              'marquee': 'marquee 40s linear infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              marquee: {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-50%)' },
               }
             }
           }
@@ -30,21 +42,27 @@
     </script>
     <style>
         body {
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark body {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        body:not(.dark) {
+            background-color: #f8fafc;
+            color: #0f172a;
         }
         .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
         .dark .glass {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(250, 204, 21, 0.1);
         }
-        .neon-glow {
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-        }
-        .neon-glow:hover {
-            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+        :not(.dark) .glass {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.05);
         }
         ::-webkit-scrollbar {
             width: 6px;
@@ -52,9 +70,21 @@
         ::-webkit-scrollbar-track {
             background: transparent;
         }
+        .dark ::-webkit-scrollbar-track {
+            background: #000000;
+        }
         ::-webkit-scrollbar-thumb {
-            background: #8B5CF6;
+            background: #FACC15;
             border-radius: 10px;
+        }
+        .ticker-container:hover .animate-marquee {
+          animation-play-state: paused;
+        }
+        input::placeholder, textarea::placeholder {
+          color: rgba(100, 116, 139, 0.5);
+        }
+        .dark input::placeholder, .dark textarea::placeholder {
+          color: rgba(255, 255, 255, 0.2);
         }
     </style>
 <script type="importmap">
@@ -68,7 +98,7 @@
 }
 </script>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-[#020617] dark:text-slate-100">
+<body class="selection:bg-brand-yellow selection:text-black">
     <div id="root"></div>
 </body>
 </html>

@@ -10,127 +10,80 @@ interface IPODetailModalProps {
 
 export const IPODetailModal: React.FC<IPODetailModalProps> = ({ ipo, onClose }) => {
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-4">
-      <div className="bg-slate-900 dark:bg-slate-900 w-full max-w-7xl rounded-[4rem] shadow-[0_0_150px_rgba(139,92,246,0.2)] relative animate-in zoom-in-95 duration-500 border border-white/10 overflow-hidden">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/95 backdrop-blur-xl flex items-center justify-center p-4">
+      <div className="bg-[#050505] w-full max-w-6xl rounded-[3rem] shadow-[0_0_150px_rgba(250,204,21,0.15)] relative animate-in zoom-in-95 duration-500 border border-brand-yellow/10 overflow-hidden">
+        {/* Fixed Close Button with High Visibility */}
         <button 
-          onClick={onClose}
-          className="absolute top-10 right-10 p-4 bg-white/5 hover:bg-white/10 rounded-[1.5rem] transition-all z-[110] text-slate-400 hover:text-white group border border-white/5"
+          onClick={onClose} 
+          className="absolute top-8 right-8 p-3.5 bg-brand-yellow text-black hover:scale-110 active:scale-90 rounded-2xl transition-all z-[110] shadow-2xl shadow-brand-yellow/20"
+          title="Close Terminal"
         >
-          <svg className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
-        <div className="flex flex-col lg:flex-row h-full max-h-[92vh]">
-          {/* Left Panel - Core Info */}
-          <div className="w-full lg:w-[32%] bg-slate-950/80 p-10 lg:p-14 overflow-y-auto border-r border-white/10 scrollbar-hide">
-            <div className="mb-14">
-              <div className="flex items-center space-x-3 mb-8">
-                 <span className="text-[10px] font-black text-brand-violet bg-brand-violet/10 px-5 py-2.5 rounded-[1.25rem] uppercase tracking-[0.3em] border border-brand-violet/20">{ipo.status}</span>
-                 <span className="text-[10px] font-black text-brand-cyan bg-brand-cyan/10 px-5 py-2.5 rounded-[1.25rem] uppercase tracking-[0.3em] border border-brand-cyan/20">{ipo.ipoType}</span>
+        <div className="flex flex-col lg:flex-row h-full max-h-[90vh]">
+          {/* Sidebar Info */}
+          <div className="w-full lg:w-[38%] bg-black p-12 overflow-y-auto border-r border-white/10 scrollbar-hide">
+            <div className="mb-12">
+              <div className="flex flex-wrap items-center gap-2 mb-8">
+                 <span className="text-[10px] font-black text-brand-yellow bg-brand-yellow/10 border border-brand-yellow/20 px-3 py-1.5 rounded-lg uppercase tracking-[0.2em]">{ipo.status}</span>
+                 <span className="text-[10px] font-black text-white bg-white/10 border border-white/20 px-3 py-1.5 rounded-lg uppercase tracking-[0.2em]">{ipo.ipoType}</span>
               </div>
-              <h2 className="text-5xl font-black text-white mt-4 leading-tight tracking-tighter drop-shadow-sm">{ipo.companyName}</h2>
-              <div className="flex items-center space-x-4 mt-6">
-                 <p className="text-sm text-brand-violet font-mono font-black tracking-[0.2em] opacity-80">{ipo.symbol}</p>
-                 <div className="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                 <p className="text-xs text-slate-500 font-black uppercase tracking-widest">{ipo.sector}</p>
+              <h2 className="text-5xl font-black text-white leading-[0.9] tracking-tighter mb-4">{ipo.companyName}</h2>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-brand-yellow font-mono font-black uppercase tracking-widest">{ipo.symbol}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                <span className="text-sm text-slate-500 font-bold uppercase tracking-widest">{ipo.sector}</span>
               </div>
             </div>
 
             <div className="space-y-12">
               <section>
-                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8 flex items-center">
-                  <span className="w-6 h-[1px] bg-slate-800 mr-4"></span>
-                  Financial DNA
-                </h4>
-                <div className="space-y-8">
-                  <DetailRow label="Total Issue" value={ipo.issueSize} />
-                  <DetailRow label="Valuation Band" value={ipo.priceBand} />
-                  <DetailRow label="Minimum Lot" value={`${ipo.lotSize} Shares`} />
-                  <DetailRow label="Listing ETA" value={ipo.listingDate} />
+                <div className="flex items-center space-x-3 mb-8">
+                  <div className="w-1 h-6 bg-brand-yellow rounded-full"></div>
+                  <h4 className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Asset Parameters</h4>
                 </div>
-              </section>
-
-              <section>
-                <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8 flex items-center">
-                   <span className="w-6 h-[1px] bg-slate-800 mr-4"></span>
-                   Stakeholders
-                </h4>
-                <div className="space-y-8">
+                <div className="space-y-4">
+                  <DetailRow label="Issue Size" value={ipo.issueSize} />
+                  <DetailRow label="Price Band" value={ipo.priceBand} />
+                  <DetailRow label="Lot Multiplier" value={`${ipo.lotSize} Shares`} />
+                  <DetailRow label="Listing Date" value={ipo.listingDate} />
                   <DetailRow label="Registrar" value={ipo.registrar} />
-                  <DetailRow label="Lead Desk" value={ipo.leadManager} />
                 </div>
               </section>
-
-              <div className="pt-12 border-t border-white/5">
-                <p className="text-sm text-slate-400 leading-relaxed font-medium italic opacity-70">
-                  {ipo.description}
-                </p>
+              <div className="pt-10 border-t border-white/10">
+                <p className="text-sm text-slate-400 leading-relaxed font-medium italic opacity-80">{ipo.description}</p>
               </div>
             </div>
           </div>
 
-          {/* Right Panel - Analysis & Risk */}
-          <div className="w-full lg:w-[68%] p-10 lg:p-14 overflow-y-auto space-y-20 bg-slate-900/60 backdrop-blur-3xl scrollbar-hide">
+          {/* Main Content Areas */}
+          <div className="w-full lg:w-[62%] p-12 overflow-y-auto space-y-16 scrollbar-hide bg-[#080808]">
             <section>
               <h3 className="text-3xl font-black text-white mb-10 flex items-center tracking-tighter">
-                <span className="mr-6 bg-emerald-500/20 p-3 rounded-2xl">⚡</span> 
-                Market Sentiment Pulse
+                <span className="w-12 h-12 bg-brand-yellow/10 border border-brand-yellow/20 rounded-2xl flex items-center justify-center mr-5">
+                  <svg className="w-6 h-6 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                </span> 
+                Market Gravity Data
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <div className="bg-white/5 p-12 rounded-[3.5rem] border border-white/5 transition-all hover:bg-white/10 hover:border-emerald-500/20 group relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 -mr-8 -mt-8 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors"></div>
-                  <p className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">Estimated GMP Gain</p>
-                  <p className="text-4xl font-black text-emerald-400 group-hover:scale-105 transition-transform origin-left tracking-tighter">{ipo.gmp}</p>
+                <div className="bg-[#111] p-10 rounded-[2.5rem] border border-white/5 group hover:border-brand-yellow/20 transition-all">
+                  <p className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">GMP Premium Delta</p>
+                  <p className="text-5xl font-black text-brand-yellow tracking-tighter">{ipo.gmp}</p>
                 </div>
-                {ipo.subscription && (
-                  <div className="bg-white/5 p-12 rounded-[3.5rem] border border-white/5 transition-all hover:bg-white/10 hover:border-brand-violet/20 group relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-brand-violet/5 -mr-8 -mt-8 rounded-full blur-2xl group-hover:bg-brand-violet/10 transition-colors"></div>
-                    <p className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">Total Subscription</p>
-                    <p className="text-4xl font-black text-brand-violet group-hover:scale-105 transition-transform origin-left tracking-tighter">{ipo.subscription.total}x</p>
-                    <p className="text-[9px] text-slate-500 mt-6 font-bold uppercase tracking-widest opacity-60">Sync: {ipo.subscription.updatedAt}</p>
-                  </div>
-                )}
+                <div className="bg-[#111] p-10 rounded-[2.5rem] border border-white/5 group hover:border-brand-yellow/20 transition-all">
+                  <p className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">Subscription Load</p>
+                  <p className="text-5xl font-black text-white tracking-tighter">{ipo.subscription?.total || 'N/A'}<span className="text-2xl text-slate-600 ml-1 font-black">X</span></p>
+                </div>
               </div>
             </section>
 
-            <section>
+            <section className="pb-16">
               <h3 className="text-3xl font-black text-white mb-10 flex items-center tracking-tighter">
-                <span className="mr-6 bg-brand-cyan/20 p-3 rounded-2xl">📈</span> 
-                Fiscal Intelligence
-              </h3>
-              <div className="bg-white/5 rounded-[3.5rem] border border-white/5 overflow-hidden backdrop-blur-xl group hover:border-brand-cyan/20 transition-colors">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-white/5 border-b border-white/5">
-                    <tr>
-                      <th className="px-12 py-8 font-black text-slate-500 uppercase tracking-[0.4em] text-[10px]">Strategic Metric</th>
-                      <th className="px-12 py-8 font-black text-slate-500 uppercase tracking-[0.4em] text-[10px]">Real-Time Data</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {ipo.financials.map((f, i) => (
-                      <tr key={i} className="hover:bg-white/[0.03] transition-colors">
-                        <td className="px-12 py-8 text-slate-300 font-bold text-base">{f.label}</td>
-                        <td className={`px-12 py-8 font-black text-lg ${
-                          f.trend === 'up' ? 'text-emerald-400' : f.trend === 'down' ? 'text-rose-400' : 'text-slate-200'
-                        }`}>{f.value}</td>
-                      </tr>
-                    ))}
-                    {ipo.valuation.map((v, i) => (
-                      <tr key={`val-${i}`} className="hover:bg-white/[0.03] transition-colors">
-                        <td className="px-12 py-8 text-slate-300 font-bold text-base">{v.label}</td>
-                        <td className="px-12 py-8 font-black text-lg text-brand-cyan">{v.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            <section className="pb-10">
-              <h3 className="text-3xl font-black text-white mb-12 flex items-center tracking-tighter">
-                <span className="mr-6 bg-brand-pink/20 p-3 rounded-2xl">🎯</span> 
-                Deep Risk Scan (AI Powered)
+                <span className="w-12 h-12 bg-brand-yellow/10 border border-brand-yellow/20 rounded-2xl flex items-center justify-center mr-5">
+                   <svg className="w-6 h-6 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </span>
+                Deep Risk Scan Result
               </h3>
               <RiskEngine ipo={ipo} />
             </section>
@@ -142,8 +95,8 @@ export const IPODetailModal: React.FC<IPODetailModalProps> = ({ ipo, onClose }) 
 };
 
 const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="flex justify-between items-center text-sm border-b border-white/5 pb-6 last:border-0 group">
-    <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest group-hover:text-slate-300 transition-colors">{label}</span>
-    <span className="text-white font-black tracking-tight text-base group-hover:text-brand-violet transition-colors">{value}</span>
+  <div className="flex justify-between items-center text-sm border-b border-white/5 pb-5 last:border-0 group hover:border-brand-yellow/20 transition-all">
+    <span className="text-slate-500 font-black uppercase text-[9px] tracking-[0.2em] group-hover:text-slate-400 transition-colors">{label}</span>
+    <span className="text-white font-black group-hover:text-brand-yellow transition-colors">{value}</span>
   </div>
 );

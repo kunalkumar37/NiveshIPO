@@ -34,9 +34,9 @@ export interface IPO {
   closeDate: string;
   listingDate: string;
   gmp: string;
-  listingGainEstimate?: string; // AI Feature
+  listingGainEstimate?: string;
   description: string;
-  riskScore: number; // 0-100
+  riskScore: number;
   riskLevel: RiskLevel;
   subscription?: SubscriptionData;
   financials: FinancialMetric[];
@@ -45,6 +45,14 @@ export interface IPO {
   leadManager: string;
   sector: string;
   sources?: GroundingSource[];
+}
+
+export interface MarketNews {
+  id: string;
+  title: string;
+  url: string;
+  source: string;
+  time: string;
 }
 
 export interface RiskAnalysis {
@@ -56,14 +64,21 @@ export interface RiskAnalysis {
   redFlags: string[];
   strengths: string[];
   sources?: GroundingSource[];
-  suitabilityScore?: number; // 0-100
+  suitabilityScore?: number;
   investorPersona?: string;
-  sectorOutlook?: string; // New AI Feature
-  listingStrategy?: string; // New AI Feature
+  sectorOutlook?: string;
+  listingStrategy?: string;
 }
 
 export interface WeightPreferences {
   fundamentals: number;
   valuation: number;
   sentiment: number;
+}
+
+export interface CommunityMessage {
+  id: string;
+  text: string;
+  timestamp: string;
+  type: 'suggestion' | 'feedback' | 'general';
 }
